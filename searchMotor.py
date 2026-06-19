@@ -1,6 +1,8 @@
 import json
 
 dictionary = []
+stopWords = {"the", "a", "an", "in", "on", "at", "is", "and", "or"}
+
 
 with open("dictionary.json", "r", encoding="utf-8") as dic:
      for txt in dic:
@@ -40,24 +42,27 @@ def addDic():
     
     
 def search():
-    src = input("Search: ").split(" ")
+    src = []
 
+    for search in input("Search: ").lower().split():
+        if search not in stopWords:
+            src.append(search)
+    
     foundText, fndTxtInd = [], []
     
     for word in src:    
         for text in dictionary:
-            if text.rfind(word) > -1 and dictionary.index(text) not in fndTxtInd:
+            if text.lower().rfind(word) > -1 and dictionary.index(text) not in fndTxtInd:
                 foundText.append(text)
                 fndTxtInd.append(dictionary.index(text))
 
-    for i in range(len(foundText)-1):
-        for j in range(len(foundText)-1-i):
-            if len(foundText[j]) < len(foundText[j+1]):
-                foundText[j], foundText[j+1] = foundText[j+1], foundText[j]
+
+    results = sorted(foundText, key=lambda t: sum(1 for w in src if w.lower() in t.lower()), reverse=True)
+    
 
     print("\n")
-    for text in foundText:
-        print(f" -> {text}")
+    for result in results:
+        print(f" -> {result}")
     print("\n")
     
 main()
